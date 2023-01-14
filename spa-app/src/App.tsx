@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Search from "./components/Search";
-import { useState } from "react";
+import TableColor from "./components/TableColor";
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
             >
               Hello, let's search.
               <Search></Search>
+              <TableColor></TableColor>
             </Typography>
           </Container>
         </Box>

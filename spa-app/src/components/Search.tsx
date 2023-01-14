@@ -1,13 +1,20 @@
 import React, { ChangeEvent } from "react";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Search = (): JSX.Element => {
   const [term, setTerm] = useState<string>("");
-  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTerm(e.target.value);
 
-    console.log(fetch("https://reqres.in/api/products"));
+  const getSearchOptions = (value: string) => {
+    fetch(`https://reqres.in/api/products/${value}`)
+      .then((response) => response.json())
+      .then((data) => console.log(data.data.name));
+  };
+
+  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setTerm(value);
+    getSearchOptions(value);
   };
   return (
     <>
