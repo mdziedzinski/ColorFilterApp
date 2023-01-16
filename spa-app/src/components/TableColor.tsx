@@ -16,8 +16,10 @@ import { query } from "express";
 import { JsxFlags } from "typescript";
 
 const TableColor = () => {
-  const [colorsFirstPage, setColorsFirstPage] = useState<any>([]);
-  const [colorsSecondPage, setColorsSecondPage] = useState<any>([]);
+  const [pages, setPages] = useState<any>([2]);
+  const [countItems, setCountItems] = useState<any>([]);
+  const [countPages, setCountPages] = useState<any>([]);
+
   const [colorsData, setColorsData] = useState<any>([]);
 
   const [term, setTerm] = useState<string>("");
@@ -28,32 +30,23 @@ const TableColor = () => {
     console.log(term);
   };
 
-  // useEffect(() => {
-  //   Promise.all([
-  //     fetch("https://reqres.in/api/products?page=1"),
-  //     fetch("https://reqres.in/api/products?page=2"),
-  //   ])
-  //     .then(([resFirstPage, resSecondPage]) =>
-  //       Promise.all([resFirstPage.json(), resSecondPage.json()])
-  //     )
-  //     .then(([dataFirstPage, dataSecondPage]) => {
-  //       setColorsFirstPage(dataFirstPage.data);
-  //       setColorsSecondPage(dataSecondPage.data);
-  //       setColorsData(dataFirstPage.data.concat(dataSecondPage.data));
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //       console.log("errory");
-  //     });
-  // }, []);
-
   useEffect(() => {
     const fetchColors = async () => {
-      const res = await axios.get(`https://reqres.in/api/products?id=${term}`);
+      const res = await axios.get(`https://reqres.in/api/products`, {
+        params: {
+          id: `${term}`,
+          per_page: 5,
+        },
+      });
       if (term) {
         setColorsData([res.data.data]);
+
+        setRowsPerPage(res.data.per_page);
       } else {
         setColorsData(res.data.data);
+        setRowsPerPage(res.data.per_page);
+        setCountItems(res.data.total);
+        setCountPages(res.data.total_pages);
       }
     };
     fetchColors();
@@ -61,6 +54,7 @@ const TableColor = () => {
 
   console.log("to jest colors data");
   console.log(colorsData);
+  console.log(pages);
 
   interface Column {
     id: "id" | "name" | "year";
@@ -101,7 +95,7 @@ const TableColor = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+    setPages(newPage);
   };
 
   const handleChangeRowsPerPage = (
@@ -110,8 +104,6 @@ const TableColor = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  // console.log(colors && colors);
-  // console.log(colorsData);
 
   const rows = colorsData;
   return (
@@ -143,7 +135,7 @@ const TableColor = () => {
             </TableHead>
             <TableBody>
               {console.log(rows)}
-              {console.log(Array.isArray(rows))}
+
               {console.log("zawartosc term=" + term)}
               {rows // .filter((row: any) => row.id.toString().includes(term))
                 // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -180,7 +172,7 @@ const TableColor = () => {
         <TablePagination
           rowsPerPageOptions={[5]}
           component="div"
-          count={rows.length}
+          count={countItems}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
