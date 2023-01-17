@@ -14,20 +14,26 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { query } from "express";
 import { JsxFlags } from "typescript";
+import { useSearchParams } from "react-router-dom";
 
 const TableColor = () => {
-  const [pages, setPages] = useState<any>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pages, setPages] = useState<any>(searchParams.get("pages") || 0);
 
   const [countItems, setCountItems] = useState<any>([]);
   const [countPages, setCountPages] = useState<any>([]);
 
   const [colorsData, setColorsData] = useState<any>([]);
 
-  const [term, setTerm] = useState<string>("");
+  const [term, setTerm] = useState<any>(searchParams.get("term"));
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setTerm(value);
+    setSearchParams({
+      term: value,
+      page: pages+1,
+    });
     console.log(term);
   };
 
@@ -35,8 +41,8 @@ const TableColor = () => {
     const fetchColors = async () => {
       const res = await axios.get(`https://reqres.in/api/products`, {
         params: {
-          id: `${term}`,
-          page: pages+1,
+          id: term ? term : "",
+          page: pages + 1,
           per_page: 5,
         },
       });
@@ -96,8 +102,12 @@ const TableColor = () => {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (event: unknown, newPage: any) => {
     setPages(newPage);
+    setSearchParams({
+      term: term,
+      page: newPage ? newPage + 1 : 1,
+    });
   };
 
   const handleChangeRowsPerPage = (
@@ -118,7 +128,7 @@ const TableColor = () => {
         id="outlined-basic"
         label="Sarch for id"
         variant="outlined"
-        type="string"
+        type="number"
         value={term}
         onChange={onInputChange}
       />
