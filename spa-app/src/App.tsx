@@ -6,36 +6,34 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
 import TableColor from "./components/TableColor";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <main>
-          <Box
-            sx={{
-              bgcolor: "background.paper",
-              pt: 8,
-              pb: 6,
-            }}
-          >
-            <Container maxWidth="sm">
-              <Typography
-                component="h1"
-                variant="h2"
-                align="center"
-                color="text.primary"
-                gutterBottom
-              >
-                Hello, let's search.
-                <TableColor></TableColor>
-              </Typography>
-            </Container>
-          </Box>
-        </main>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Box
+          sx={{
+            bgcolor: "background.paper",
+            pt: 8,
+            pb: 6,
+          }}
+        >
+          <Container maxWidth="sm">
+            <Typography
+              component="h1"
+              variant="h2"
+              align="center"
+              color="text.primary"
+              gutterBottom
+            >
+              Hello, let's search.
+              <TableColor />
+            </Typography>
+          </Container>
+        </Box>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
