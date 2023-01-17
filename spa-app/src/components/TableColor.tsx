@@ -8,7 +8,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { colors, lighten } from "@mui/material";
+import { Button, colors, lighten } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
@@ -16,7 +16,8 @@ import { query } from "express";
 import { JsxFlags } from "typescript";
 
 const TableColor = () => {
-  const [pages, setPages] = useState<any>([2]);
+  const [pages, setPages] = useState<any>(0);
+
   const [countItems, setCountItems] = useState<any>([]);
   const [countPages, setCountPages] = useState<any>([]);
 
@@ -35,22 +36,23 @@ const TableColor = () => {
       const res = await axios.get(`https://reqres.in/api/products`, {
         params: {
           id: `${term}`,
+          page: pages+1,
           per_page: 5,
         },
       });
       if (term) {
         setColorsData([res.data.data]);
 
-        setRowsPerPage(res.data.per_page);
+        // setRowsPerPage(res.data.per_page);
       } else {
         setColorsData(res.data.data);
-        setRowsPerPage(res.data.per_page);
+        // setCountRows(res.data.per_page);
         setCountItems(res.data.total);
         setCountPages(res.data.total_pages);
       }
     };
     fetchColors();
-  }, [term]);
+  }, [term, pages]);
 
   console.log("to jest colors data");
   console.log(colorsData);
@@ -91,7 +93,7 @@ const TableColor = () => {
     year: number;
   }
 
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -102,9 +104,12 @@ const TableColor = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
+  console.log("rowsperpage");
+  console.log(rowsPerPage);
+  console.log("konsologuje pages");
+  console.log(pages);
   const rows = colorsData;
   return (
     <>
@@ -117,6 +122,7 @@ const TableColor = () => {
         value={term}
         onChange={onInputChange}
       />
+
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -137,8 +143,8 @@ const TableColor = () => {
               {console.log(rows)}
 
               {console.log("zawartosc term=" + term)}
-              {rows // .filter((row: any) => row.id.toString().includes(term))
-                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {rows
+                // .slice(pages * rowsPerPage, pages * rowsPerPage + rowsPerPage)
 
                 .map((row: any) => {
                   return (
@@ -174,7 +180,7 @@ const TableColor = () => {
           component="div"
           count={countItems}
           rowsPerPage={rowsPerPage}
-          page={page}
+          page={pages}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
