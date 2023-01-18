@@ -10,11 +10,9 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Button, colors, lighten } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
-import { query } from "express";
-import { JsxFlags } from "typescript";
 import { useSearchParams } from "react-router-dom";
+import BasicModal from "./Modal";
 
 const TableColor = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,7 +30,7 @@ const TableColor = () => {
     setTerm(value);
     setSearchParams({
       term: value,
-      page: pages+1,
+      page: pages + 1,
     });
     console.log(term);
   };
@@ -121,6 +119,8 @@ const TableColor = () => {
   console.log("konsologuje pages");
   console.log(pages);
   const rows = colorsData;
+  const [open, setOpen] = React.useState(false);
+
   return (
     <>
       <TextField
@@ -151,35 +151,39 @@ const TableColor = () => {
             </TableHead>
             <TableBody>
               {console.log(rows)}
-
               {console.log("zawartosc term=" + term)}
               {rows
                 // .slice(pages * rowsPerPage, pages * rowsPerPage + rowsPerPage)
 
                 .map((row: any) => {
                   return (
-                    <TableRow
-                      sx={{
-                        cursor: "pointer",
-                        backgroundColor: `${row.color}`,
-                        ":hover": {
-                          backgroundColor: lighten(`${row.color}`, 0.2),
-                        },
-                      }}
-                      tabIndex={-1}
-                      key={row.id}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
+                    <>
+                      <TableRow
+                        onClick={() => setOpen(true)}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: `${row.color}`,
+                          ":hover": {
+                            backgroundColor: lighten(`${row.color}`, 0.2),
+                          },
+                        }}
+                        tabIndex={-1}
+                        key={row.id}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <>
+                              <TableCell key={column.id} align={column.align}>
+                                {column.format && typeof value === "number"
+                                  ? column.format(value)
+                                  : value}
+                              </TableCell>
+                            </>
+                          );
+                        })}
+                      </TableRow>
+                    </>
                   );
                 })}
             </TableBody>
