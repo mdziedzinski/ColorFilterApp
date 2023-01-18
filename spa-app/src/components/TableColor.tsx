@@ -11,10 +11,18 @@ import TableRow from "@mui/material/TableRow";
 import { Button, colors, lighten } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
+import { AxiosError } from "axios";
 import { useSearchParams } from "react-router-dom";
 import BasicModal from "./Modal";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Typography from "@mui/material/Typography";
+import { Suspense } from "react";
 
 const TableColor = () => {
+  const [Loading, setLoading] = useState(true);
+  const [showError, setShowError] = useState(false);
+  const [errorCode, setErrorCode] = useState("");
   const [searchParams, setSearchParams] = useSearchParams("");
   const [pages, setPages] = useState<any>(searchParams.get("pages") || 0);
 
@@ -27,23 +35,36 @@ const TableColor = () => {
 
   useEffect(() => {
     const fetchColors = async () => {
-      const res = await axios.get(`https://reqres.in/api/products`, {
-        params: {
-          id: term ? term : "",
-          page: pages + 1,
-          per_page: 5,
-        },
-      });
-      if (term) {
-        setColorsData([res.data.data]);
-        setCountItems([res.data.data].length);
-        // setRowsPerPage(res.data.per_page);
-      } else {
-        setColorsData(res.data.data);
-        // setCountRows(res.data.per_page);
-        setCountItems(res.data.total);
-        setCountPages(res.data.total_pages);
-      }
+      setLoading(true);
+      const res = await axios
+        .get(`https://reqres.in/api/products`, {
+          params: {
+            id: term ? term : "",
+            page: pages + 1,
+            per_page: 5,
+          },
+        })
+        .then((res) => {
+          if (term) {
+            setColorsData([res.data.data]);
+            setCountItems([res.data.data].length);
+            // setRowsPerPage(res.data.per_page);
+          } else {
+            setColorsData(res.data.data);
+            // setCountRows(res.data.per_page);
+            setCountItems(res.data.total);
+            setCountPages(res.data.total_pages);
+          }
+          setShowError(false);
+          setLoading(false);
+        })
+        .catch((reason: AxiosError) => {
+          setShowError(true);
+          setErrorCode(reason.message);
+          setTimeout(() => {
+            setShowError(false);
+          }, 5000);
+        });
     };
     fetchColors();
   }, [term, pages]);
@@ -119,6 +140,19 @@ const TableColor = () => {
     setModalColor(row);
   };
 
+  const renderError = () => {
+    if (showError === true) {
+      return (
+        <>
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            This is an error alert — <strong>{errorCode}</strong>
+          </Alert>
+        </>
+      );
+    }
+  };
+
   return (
     <>
       <TextField
@@ -130,6 +164,7 @@ const TableColor = () => {
         value={term || ""}
         onChange={onInputChange}
       />
+      {errorCode ? renderError() : false}
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -192,13 +227,13 @@ const TableColor = () => {
       </Paper>
       <BasicModal
         infoColor={
-          <>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             <p>ID: {dataModalColor[0]}</p>
             <p>Name: {dataModalColor[1]}</p>
             <p>Year: {dataModalColor[2]}</p>
             <p>Color HEX value: {dataModalColor[3]}</p>
             <p>Color Pantone value: {dataModalColor[4]}</p>
-          </>
+          </Typography>
         }
         open={open}
         onClose={() => setOpen(false)}
