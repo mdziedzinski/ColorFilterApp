@@ -10,14 +10,13 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Button, colors, lighten } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
-import { query } from "express";
-import { JsxFlags } from "typescript";
 import { useSearchParams } from "react-router-dom";
+import BasicModal from "./Modal";
+import e from "express";
 
 const TableColor = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams("");
   const [pages, setPages] = useState<any>(searchParams.get("pages") || 0);
 
   const [countItems, setCountItems] = useState<any>([]);
@@ -31,8 +30,8 @@ const TableColor = () => {
     const { value } = e.target;
     setTerm(value);
     setSearchParams({
-      term: value,
-      page: pages+1,
+      term: value ? value : "",
+      page: pages + 1,
     });
     console.log(term);
   };
@@ -48,6 +47,7 @@ const TableColor = () => {
       });
       if (term) {
         setColorsData([res.data.data]);
+        setCountItems([res.data.total]);
 
         // setRowsPerPage(res.data.per_page);
       } else {
@@ -105,7 +105,7 @@ const TableColor = () => {
   const handleChangePage = (event: unknown, newPage: any) => {
     setPages(newPage);
     setSearchParams({
-      term: term,
+      term: term ? term : "",
       page: newPage ? newPage + 1 : 1,
     });
   };
@@ -121,6 +121,14 @@ const TableColor = () => {
   console.log("konsologuje pages");
   console.log(pages);
   const rows = colorsData;
+  const [open, setOpen] = React.useState(false);
+  const [modalColor, setModalColor] = useState([]);
+  const dataModalColor = Object.values(modalColor);
+  const tableCellClickHandler = (row: any) => {
+    setOpen(true);
+    setModalColor(row);
+  };
+
   return (
     <>
       <TextField
@@ -132,7 +140,6 @@ const TableColor = () => {
         value={term}
         onChange={onInputChange}
       />
-
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -151,35 +158,39 @@ const TableColor = () => {
             </TableHead>
             <TableBody>
               {console.log(rows)}
-
               {console.log("zawartosc term=" + term)}
               {rows
                 // .slice(pages * rowsPerPage, pages * rowsPerPage + rowsPerPage)
 
                 .map((row: any) => {
                   return (
-                    <TableRow
-                      sx={{
-                        cursor: "pointer",
-                        backgroundColor: `${row.color}`,
-                        ":hover": {
-                          backgroundColor: lighten(`${row.color}`, 0.2),
-                        },
-                      }}
-                      tabIndex={-1}
-                      key={row.id}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
+                    <>
+                      <TableRow
+                        onClick={() => tableCellClickHandler(row)}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: `${row.color}`,
+                          ":hover": {
+                            backgroundColor: lighten(`${row.color}`, 0.2),
+                          },
+                        }}
+                        tabIndex={-1}
+                        key={row.id}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <>
+                              <TableCell key={column.id} align={column.align}>
+                                {column.format && typeof value === "number"
+                                  ? column.format(value)
+                                  : value}
+                              </TableCell>
+                            </>
+                          );
+                        })}
+                      </TableRow>
+                    </>
                   );
                 })}
             </TableBody>
@@ -188,13 +199,26 @@ const TableColor = () => {
         <TablePagination
           rowsPerPageOptions={[5]}
           component="div"
-          count={countItems}
+          count={countItems || []}
           rowsPerPage={rowsPerPage}
           page={pages}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <BasicModal
+        infoColor={
+          <>
+            <p>ID: {dataModalColor[0]}</p>
+            <p>Name: {dataModalColor[1]}</p>
+            <p>Year: {dataModalColor[2]}</p>
+            <p>Color HEX value: {dataModalColor[3]}</p>
+            <p>Color Pantone value: {dataModalColor[4]}</p>
+          </>
+        }
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };
