@@ -13,28 +13,17 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import BasicModal from "./Modal";
-import e from "express";
 
 const TableColor = () => {
   const [searchParams, setSearchParams] = useSearchParams("");
   const [pages, setPages] = useState<any>(searchParams.get("pages") || 0);
 
-  const [countItems, setCountItems] = useState<any>([]);
+  const [countItems, setCountItems] = useState<any>(-1);
   const [countPages, setCountPages] = useState<any>([]);
 
   const [colorsData, setColorsData] = useState<any>([]);
 
   const [term, setTerm] = useState<any>(searchParams.get("term"));
-
-  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setTerm(value);
-    setSearchParams({
-      term: value ? value : "",
-      page: pages + 1,
-    });
-    console.log(term);
-  };
 
   useEffect(() => {
     const fetchColors = async () => {
@@ -47,8 +36,7 @@ const TableColor = () => {
       });
       if (term) {
         setColorsData([res.data.data]);
-        setCountItems([res.data.total]);
-
+        setCountItems([res.data.data].length);
         // setRowsPerPage(res.data.per_page);
       } else {
         setColorsData(res.data.data);
@@ -59,10 +47,6 @@ const TableColor = () => {
     };
     fetchColors();
   }, [term, pages]);
-
-  console.log("to jest colors data");
-  console.log(colorsData);
-  console.log(pages);
 
   interface Column {
     id: "id" | "name" | "year";
@@ -102,6 +86,16 @@ const TableColor = () => {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setTerm(value == null ? "" : value);
+    setSearchParams({
+      term: value ? value : "",
+      page: pages + 1,
+    });
+    console.log(term);
+  };
+
   const handleChangePage = (event: unknown, newPage: any) => {
     setPages(newPage);
     setSearchParams({
@@ -116,10 +110,6 @@ const TableColor = () => {
     setRowsPerPage(+event.target.value);
   };
 
-  console.log("rowsperpage");
-  console.log(rowsPerPage);
-  console.log("konsologuje pages");
-  console.log(pages);
   const rows = colorsData;
   const [open, setOpen] = React.useState(false);
   const [modalColor, setModalColor] = useState([]);
@@ -137,7 +127,7 @@ const TableColor = () => {
         label="Sarch for id"
         variant="outlined"
         type="number"
-        value={term}
+        value={term || ""}
         onChange={onInputChange}
       />
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -157,40 +147,34 @@ const TableColor = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {console.log(rows)}
-              {console.log("zawartosc term=" + term)}
               {rows
                 // .slice(pages * rowsPerPage, pages * rowsPerPage + rowsPerPage)
 
                 .map((row: any) => {
                   return (
-                    <>
-                      <TableRow
-                        onClick={() => tableCellClickHandler(row)}
-                        sx={{
-                          cursor: "pointer",
-                          backgroundColor: `${row.color}`,
-                          ":hover": {
-                            backgroundColor: lighten(`${row.color}`, 0.2),
-                          },
-                        }}
-                        tabIndex={-1}
-                        key={row.id}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <>
-                              <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            </>
-                          );
-                        })}
-                      </TableRow>
-                    </>
+                    <TableRow
+                      onClick={() => tableCellClickHandler(row)}
+                      sx={{
+                        cursor: "pointer",
+                        backgroundColor: `${row.color}`,
+                        ":hover": {
+                          backgroundColor: lighten(`${row.color}`, 0.2),
+                        },
+                      }}
+                      tabIndex={-1}
+                      key={row.id}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === "number"
+                              ? column.format(value)
+                              : value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
                   );
                 })}
             </TableBody>
@@ -199,7 +183,7 @@ const TableColor = () => {
         <TablePagination
           rowsPerPageOptions={[5]}
           component="div"
-          count={countItems || []}
+          count={countItems}
           rowsPerPage={rowsPerPage}
           page={pages}
           onPageChange={handleChangePage}
