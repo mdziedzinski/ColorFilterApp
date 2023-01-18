@@ -13,9 +13,10 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import BasicModal from "./Modal";
+import e from "express";
 
 const TableColor = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams("");
   const [pages, setPages] = useState<any>(searchParams.get("pages") || 0);
 
   const [countItems, setCountItems] = useState<any>([]);
@@ -29,7 +30,7 @@ const TableColor = () => {
     const { value } = e.target;
     setTerm(value);
     setSearchParams({
-      term: value,
+      term: value ? value : "",
       page: pages + 1,
     });
     console.log(term);
@@ -46,6 +47,7 @@ const TableColor = () => {
       });
       if (term) {
         setColorsData([res.data.data]);
+        setCountItems([res.data.total]);
 
         // setRowsPerPage(res.data.per_page);
       } else {
@@ -103,7 +105,7 @@ const TableColor = () => {
   const handleChangePage = (event: unknown, newPage: any) => {
     setPages(newPage);
     setSearchParams({
-      term: term,
+      term: term ? term : "",
       page: newPage ? newPage + 1 : 1,
     });
   };
@@ -120,6 +122,12 @@ const TableColor = () => {
   console.log(pages);
   const rows = colorsData;
   const [open, setOpen] = React.useState(false);
+  const [modalColor, setModalColor] = useState([]);
+  const dataModalColor = Object.values(modalColor);
+  const tableCellClickHandler = (row: any) => {
+    setOpen(true);
+    setModalColor(row);
+  };
 
   return (
     <>
@@ -132,7 +140,6 @@ const TableColor = () => {
         value={term}
         onChange={onInputChange}
       />
-
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -159,7 +166,7 @@ const TableColor = () => {
                   return (
                     <>
                       <TableRow
-                        onClick={() => setOpen(true)}
+                        onClick={() => tableCellClickHandler(row)}
                         sx={{
                           cursor: "pointer",
                           backgroundColor: `${row.color}`,
@@ -192,13 +199,26 @@ const TableColor = () => {
         <TablePagination
           rowsPerPageOptions={[5]}
           component="div"
-          count={countItems}
+          count={countItems || []}
           rowsPerPage={rowsPerPage}
           page={pages}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <BasicModal
+        infoColor={
+          <>
+            <p>ID: {dataModalColor[0]}</p>
+            <p>Name: {dataModalColor[1]}</p>
+            <p>Year: {dataModalColor[2]}</p>
+            <p>Color HEX value: {dataModalColor[3]}</p>
+            <p>Color Pantone value: {dataModalColor[4]}</p>
+          </>
+        }
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };
