@@ -1,6 +1,6 @@
 # ColorFilterApp
 
-![Design preview of the app](./public/preview.png)
+![Design preview of the app](./spa-app/public/preview.png)
 
 ## Welcome! 👋
 
