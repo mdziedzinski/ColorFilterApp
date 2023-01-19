@@ -8,8 +8,9 @@ This is my color filter app built using React and [ Reqres API](https://reqres.i
 
 ## Features
 
-App is fully responsive.
-It fetches recipes from Spoonocular API and displays them in different categories. You can search for recipe and there is also one-day mealplan generator with controls (calories, diet type).
+This is simple apps that allows to filter colors depending on id fetched from reqres API built in React (TypeScript).
+It includes server side filtering and pagination, error handling and url search params. 
+UI was built using Material UI, thanks to that, there is simple theme toggle for dark and light theme. 
 
 ## Tools used
 
@@ -17,6 +18,7 @@ It fetches recipes from Spoonocular API and displays them in different categorie
   - Material UI
   - TypeScript
   - Axios
+  - React Router
 - Reqres API
 
 ## Live website
