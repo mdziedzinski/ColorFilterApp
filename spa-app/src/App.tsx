@@ -9,7 +9,10 @@ import TableColor from "./components/TableColor";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useState } from "react";
+import Button from "@mui/material/Button";
+import { Link } from "@mui/material";
+import CoffeeTwoToneIcon from "@mui/icons-material/CoffeeTwoTone";
 
 const darkTheme = createTheme({
   palette: {
@@ -17,9 +20,17 @@ const darkTheme = createTheme({
   },
 });
 
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+  },
+});
+
 function App() {
+  const [theme, setTheme] = useState<object>(darkTheme);
+
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box
         sx={{
@@ -28,18 +39,51 @@ function App() {
           pb: 6,
         }}
       >
-        <Container maxWidth="sm">
-          <Typography
-            component="h1"
-            variant="h2"
-            align="center"
-            color="text.primary"
-            gutterBottom
+        <main>
+          <Container
+            maxWidth="sm"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
           >
-            Hello, let's search.
+            <Typography
+              className="gradient-text"
+              component="h1"
+              variant="h2"
+              align="center"
+            >
+              Hello, let's search.
+            </Typography>
+            <Button
+              color="inherit"
+              onClick={() => {
+                setTheme(theme === darkTheme ? lightTheme : darkTheme);
+              }}
+            >
+              Change theme to {theme === darkTheme ? "light " : "dark"}
+            </Button>
             <TableColor />
-          </Typography>
-        </Container>
+          </Container>
+        </main>
+        <footer>
+          <Link
+            href="https://github.com/mdziedzinski"
+            target="_blank"
+            sx={{
+              display: "flex",
+              alignContent: "center",
+              justifyContent: "center",
+              marginTop: "2rem",
+            }}
+            color="inherit"
+            underline="none"
+          >
+            Created with <CoffeeTwoToneIcon sx={{ marginInline: "5px" }} /> by
+            Marcin Dziedziński
+          </Link>
+        </footer>
       </Box>
     </ThemeProvider>
   );
