@@ -23,4 +23,4 @@ UI was built using Material UI, thanks to that, there is simple theme toggle for
 
 ## Live website
 
-- [Netlify](https://benevolent-muffin-09c9df.netlify.app/)
+- [ColorFilterApp live on Netlify](https://cerulean-croquembouche-a38916.netlify.app/)
