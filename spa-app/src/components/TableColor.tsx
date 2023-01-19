@@ -156,13 +156,14 @@ const TableColor = () => {
   return (
     <>
       <TextField
-        sx={{ m: "2rem" }}
+        sx={{ m: "2rem", align: "center"}}
         id="outlined-basic"
         label="Sarch for id"
         variant="outlined"
         type="number"
         value={term || ""}
         onChange={onInputChange}
+        
       />
       {errorCode ? renderError() : false}
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -227,12 +228,15 @@ const TableColor = () => {
       </Paper>
       <BasicModal
         infoColor={
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            <p>ID: {dataModalColor[0]}</p>
-            <p>Name: {dataModalColor[1]}</p>
-            <p>Year: {dataModalColor[2]}</p>
-            <p>Color HEX value: {dataModalColor[3]}</p>
-            <p>Color Pantone value: {dataModalColor[4]}</p>
+          <Typography
+            id="modal-modal-description"
+            sx={{ span: { display: "block" } }}
+          >
+            <span>ID: {dataModalColor[0]}</span>
+            <span>Name: {dataModalColor[1]}</span>
+            <span>Year: {dataModalColor[2]}</span>
+            <span>Color HEX value: {dataModalColor[3]}</span>
+            <span>Color Pantone value: {dataModalColor[4]}</span>
           </Typography>
         }
         open={open}
