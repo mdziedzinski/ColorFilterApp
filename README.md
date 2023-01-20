@@ -21,6 +21,6 @@ UI was built using Material UI, thanks to that, there is simple theme toggle for
   - React Router
 - Reqres API
 
-## Live website
+## Live website :tada:
 
 - [ColorFilterApp live on Netlify](https://cerulean-croquembouche-a38916.netlify.app/)
