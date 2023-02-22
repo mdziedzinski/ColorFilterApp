@@ -17,7 +17,6 @@ const style = {
 };
 
 export default function BasicModal(props: any) {
-  //   const [open, setOpen] = React.useState(false);
   const { open, onClose, infoColor } = props;
   const handleOpen = () => onClose(true);
   const handleClose = () => onClose(false);

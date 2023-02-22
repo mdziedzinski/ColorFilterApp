@@ -17,7 +17,6 @@ import BasicModal from "./Modal";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Typography from "@mui/material/Typography";
-import { Suspense } from "react";
 
 const TableColor = () => {
   const [Loading, setLoading] = useState(true);
@@ -48,10 +47,8 @@ const TableColor = () => {
           if (term) {
             setColorsData([res.data.data]);
             setCountItems([res.data.data].length);
-            // setRowsPerPage(res.data.per_page);
           } else {
             setColorsData(res.data.data);
-            // setCountRows(res.data.per_page);
             setCountItems(res.data.total);
             setCountPages(res.data.total_pages);
           }
@@ -114,7 +111,6 @@ const TableColor = () => {
       term: value ? value : "",
       page: pages + 1,
     });
-    console.log(term);
   };
 
   const handleChangePage = (event: unknown, newPage: any) => {
@@ -156,14 +152,13 @@ const TableColor = () => {
   return (
     <>
       <TextField
-        sx={{ m: "2rem", align: "center"}}
+        sx={{ m: "2rem", align: "center" }}
         id="outlined-basic"
         label="Sarch for id"
         variant="outlined"
         type="number"
         value={term || ""}
         onChange={onInputChange}
-        
       />
       {errorCode ? renderError() : false}
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -183,36 +178,33 @@ const TableColor = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                // .slice(pages * rowsPerPage, pages * rowsPerPage + rowsPerPage)
-
-                .map((row: any) => {
-                  return (
-                    <TableRow
-                      onClick={() => tableCellClickHandler(row)}
-                      sx={{
-                        cursor: "pointer",
-                        backgroundColor: `${row.color}`,
-                        ":hover": {
-                          backgroundColor: lighten(`${row.color}`, 0.2),
-                        },
-                      }}
-                      tabIndex={-1}
-                      key={row.id}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+              {rows.map((row: any) => {
+                return (
+                  <TableRow
+                    onClick={() => tableCellClickHandler(row)}
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: `${row.color}`,
+                      ":hover": {
+                        backgroundColor: lighten(`${row.color}`, 0.2),
+                      },
+                    }}
+                    tabIndex={-1}
+                    key={row.id}
+                  >
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === "number"
+                            ? column.format(value)
+                            : value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

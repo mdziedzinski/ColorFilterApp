@@ -41,7 +41,7 @@ function App() {
       >
         <main>
           <Container
-            maxWidth="sm"
+            maxWidth="lg"
             sx={{
               display: "flex",
               flexDirection: "column",
